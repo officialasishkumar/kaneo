@@ -3,6 +3,7 @@ import { acceptsIssue } from "../../sync/rules";
 import { importIssueLabels } from "../../sync/issue-labels";
 import { canSyncTask } from "../../sync/eligibility";
 import { createIssueWrite } from "../../sync/dispatch-issue-write";
+import { isIssueAwaitingTaskLink } from "../../sync/issue-awaiting-task-link";
 import { and, eq } from "drizzle-orm";
 import db from "../../../database";
 import {
@@ -111,6 +112,10 @@ export async function handleGiteaIssueOpened(
           String(issue.number),
           tx,
         )
+      )
+        return null;
+      if (
+        await isIssueAwaitingTaskLink(issue.body, projectId, integration.id, tx)
       )
         return null;
       const resolvedStatus = await resolveTargetStatus(
