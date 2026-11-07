@@ -12,7 +12,10 @@ type Entry = {
 };
 
 /** One request per task, with pending edits coalesced to the latest value. */
-export function createDescriptionSaveQueue(delay = 700) {
+export function createDescriptionSaveQueue(
+  delay = 700,
+  logLabel = "Description",
+) {
   const entries = new Map<string, Entry>();
   const listeners = new Set<() => void>();
   const pausedOwners = new Map<string, number>();
@@ -39,7 +42,7 @@ export function createDescriptionSaveQueue(delay = 700) {
     } catch (error) {
       if (entries.get(id) !== entry) return;
       entry.running = false;
-      console.error("Description save failed", {
+      console.error(`${logLabel} save failed`, {
         taskId: id,
         errorName: error instanceof Error ? error.name : "UnknownError",
         status:

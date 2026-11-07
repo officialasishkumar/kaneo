@@ -21,6 +21,10 @@ export function useUpdateTaskTitle() {
     },
     onSuccess: (updated, variables, context) => {
       invalidateMyWork(queryClient);
+      queryClient.setQueryData<Task>(
+        ["task", variables.id],
+        (current) => current && { ...current, title: updated.title },
+      );
       queryClient.invalidateQueries({
         queryKey: ["task", variables.id],
       });

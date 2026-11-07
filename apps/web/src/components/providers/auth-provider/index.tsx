@@ -7,6 +7,7 @@ import {
 } from "react";
 import { authClient } from "@/lib/auth-client";
 import { descriptionSaveQueue } from "@/lib/description-save-queue";
+import { taskTitleSaveQueue } from "@/lib/task-title-save-queue";
 import type { User } from "@/types/user";
 import { BootFrame } from "../../common/boot-frame";
 
@@ -33,7 +34,10 @@ function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     if (isPending || error) return;
     const owner = data?.user.id ?? null;
-    if (previousOwner.current !== owner) descriptionSaveQueue.clear();
+    if (previousOwner.current !== owner) {
+      descriptionSaveQueue.clear();
+      taskTitleSaveQueue.clear();
+    }
     previousOwner.current = owner;
   }, [data?.user.id, isPending, error]);
   const hasLoadedOnce = useRef(false);
